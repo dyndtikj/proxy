@@ -1,0 +1,45 @@
+version: '3.4'
+services:
+  mongo:
+    image: 'mongo:latest'
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data/dev/mongo:/data/db
+    networks:
+      my_network:
+        ipv4_address: 172.28.0.2
+
+  proxy:
+    depends_on:
+      mongo:
+        condition: service_started
+    volumes:
+      - ./logs:/app/logs
+    build:
+      context: .
+      dockerfile: ./cmd/bin/Dockerfile
+    command:
+      - /bin/sh
+      - -c
+      - |
+        apt-get install -y ca-certificates
+        cp /app/cert_data/cert.pem /usr/local/share/ca-certificates/cert.crt
+        chmod 644 /usr/local/share/ca-certificates/cert.crt
+        update-ca-certificates
+        ./main
+    networks:
+      my_network:
+        ipv4_address: 172.28.0.3
+#    network_mode: "host" : works only on linux
+    ports:
+      - "8080:8080"
+    restart: always
+
+networks:
+  my_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
