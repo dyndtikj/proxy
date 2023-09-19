@@ -31,19 +31,6 @@ import (
 var globalLogger = logger.Init(log.InfoLevel, true, "proxy",
 	"2006-01-02_15:04:05_MST", "proxy", "logs/app")
 
-////func OnRequest(ctx *goproxy.Context, req *http.Request) (
-////	resp *http.Response) {
-////	// Log proxying requests.
-////	log.Printf("INFO: Proxy %d %d: %s %s", ctx.SessionNo, ctx.SubSessionNo, req.Method, req.URL.String())
-////	return
-////}
-//
-//func OnResponse(ctx *goproxy.Context, req *http.Request,
-//	resp *http.Response) {
-//	// Add header "Via: go-goproxy".
-//	resp.Header.Add("Via", "go-goproxy")
-//}
-
 func OnError(ctx *goproxy.Context, where string,
 	err *goproxy.Error, opErr error) {
 	globalLogger.Errorf("%s: %s [%s]", where, err, opErr)
